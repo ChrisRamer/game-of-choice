@@ -53,3 +53,17 @@ button[type="submit"] {
 }
 
 /* End of base css */
+
+#intro {
+	border: 2px solid rgb(58, 58, 58);
+	border-radius: 10px;
+	font-weight: bold;
+}
+
+#startGame {
+	margin: 15px 0 0 75px;
+}
+
+.btn {
+	margin: 22.5px 0 0 -50px;
+}

@@ -12,7 +12,62 @@
 <body>
 
 	<div id="center-align">
-		<!--  -->
+		<!-- Introduction to Pig Dice -->
+		<div id="intro">
+			<h1>
+				Pig Dice
+				<small class="text-muted">with a CPU</small>
+			</h1>
+			<p>
+				The rules of Pig Dice are simple. Each turn, a player repeatedly rolls a die until either a 1 is rolled or the
+				player decides to "hold":
+				<br><br>
+				• If the player rolls a 1, they score nothing and it becomes the next player's turn.<br>
+				• If the player rolls any other number, it is added to their turn total and the player's turn continues.<br>
+				• If a player chooses to "hold", their turn total is added to their score, and it becomes the next player's
+				turn.<br>
+				<br>
+				The first player to score 100 or more points wins.
+			</p>
+		</div>
+
+		<!-- Start pig dice form -->
+		<div class="container">
+			<div class="row">
+				<form id="startGame">
+					<div class="col-sm-2">
+						<div class="form-group">
+							<label for="playerName">Your name</label>
+							<input id="playerName" class="form-control" type="text" placeholder="Player">
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="form-group">
+							<label for="playerStartPts">Starting points</label>
+							<input id="playerStartPts" class="form-control" type="number" placeholder="0">
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="form-group">
+							<label for="cpuLevel">CPU Difficulty</label>
+							<select class="form-control" id="cpuLevel">
+								<option>Easy</option>
+								<option>Hard</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="form-group">
+							<label for="cpuStartPts">CPU starting points</label>
+							<input id="cpuStartPts" class="form-control" type="number" placeholder="0">
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<button type="submit" class="btn">Play game!</button>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 
 </body>
