@@ -38,7 +38,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<label for="playerName">Your name</label>
-							<input id="playerName" class="form-control" type="text" placeholder="Player">
+							<input type="text" id="playerName" class="form-control" placeholder="Player">
 						</div>
 					</div>
 					<div class="col-sm-2">
@@ -69,14 +69,14 @@
 
 		<!-- Main gameplay -->
 		<div id="playGame">
-			<h3 id="currentTurn">Turn 1 | Roll 1: Player Rolls!</h3>
+			<h3></h3>
 			<img id="diceRolled" src="img/dice6.png">
 			<br><br>
 			<p id="rollSummary">You have accumulated 15 points this turn. If you hold now, you will have a total  of 69 points.</p>
 			<div id="gameplayButtons" style="margin-left: 100px">
-				<button type="submit" class="btn" style="display: inline-block">Roll again!</button>
+				<button id="roll" type="submit" class="btn" style="display: inline-block">Roll again!</button>
 				<p style="display: inline-block; margin: 0 10px 0 -100px">Roll again or hold?</p>
-				<button type="submit" class="btn" style="display: inline-block">Hold!</button>
+				<button id="hold" type="submit" class="btn" style="display: inline-block">Hold!</button>
 			</div>
 		</div>
 	</div>
