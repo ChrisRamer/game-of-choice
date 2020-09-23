@@ -67,3 +67,7 @@ button[type="submit"] {
 .btn {
 	margin: 5px 111px 0 0;
 }
+
+#playGame {
+	display: none;
+}
