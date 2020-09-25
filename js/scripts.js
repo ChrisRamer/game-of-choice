@@ -2,7 +2,7 @@
 
 let playerName = "Steve";
 let turnCount = 0;
-let rollCount = 1;
+let rollsThisTurn = 1;
 let playerPts = 0;
 let playerPtsThisTurn = 0;
 let cpuPts = 0;
@@ -12,8 +12,7 @@ let cpuDiceCount = 0;
 
 function StartGame() {
 	playerName = $("input#playerName").val();
-	//AddTurn();
-	OnRollEnd(); // Start game
+	AddTurn(); // Start on turn 1
 	$("#startGame").hide(); // Hide game setup
 	$("#playGame").fadeIn(500); // Show gameplay
 }
@@ -30,14 +29,22 @@ function OnDiceRoll() {
 	const randNum = Math.floor(Math.random() * (6 - 1) + 1) // Roll random dice number
 	document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
 
-	// If rolled a 1, lose all points
-	if (randNum === 1) {
-		playerPtsThisTurn = 0;
-	}
-	else {
-		if (IsPlayersTurn()) {
+	if (IsPlayersTurn()) {
+		$("#playGame h3").text("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": " + playerName + " Rolls!");
+
+		if (randNum === 1) {
+			playerPtsThisTurn = 0;
+		}
+		else {
 			playerPtsThisTurn += randNum;
 			playerDiceCount++;
+		}
+	}
+	else {
+		$("#playGame h3").text("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": CPU Rolls!");
+
+		if (randNum === 1) {
+			cpuPtsThisTurn = 0;
 		}
 		else {
 			cpuPtsThisTurn += randNum;
@@ -50,21 +57,31 @@ function OnDiceRoll() {
 
 function OnRollEnd() {
 	if (IsPlayersTurn()) {
-		$("#playGame h3").text("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollCount++) + ": " + playerName + " Rolls!");
+		if (playerPtsThisTurn > 0) {
+			$("#rollSummary").text("You have accumlated " + playerPtsThisTurn + " points this turn. You have a total of " + playerPts + " points.");
+		}
+		else {
+			$("#rollSummary").text("Oh no! You lost your points for this round :(");
+
+			// Wait some time
+			setTimeout(function() {
+				AddTurn();
+			}, 2500);
+		}
 	}
 	else {
-		$("#playGame h3").text("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollCount++) + ": CPU Rolls!");
+		$("#rollSummary").text("");
 	}
 }
 
 function OnHold() {
 	if (IsPlayersTurn()) {
-		playerPts += playerPtsThisTurn;
+		UpdateScore(playerPtsThisTurn);
 		playerDiceCount = 0;
 		playerPtsThisTurn = 0;
 	}
 	else {
-		cpuPts += cpuPtsThisTurn;
+		UpdateScore(cpuPtsThisTurn);
 		cpuDiceCount = 0;
 		cpuPtsThisTurn = 0;
 	}
@@ -72,25 +89,41 @@ function OnHold() {
 
 function UpdateScore (points) {
 	// If player's turn
-	if (turnCount % 2 == 1) {
+	if (IsPlayersTurn()) {
 		playerPts += points;
 	}
 	// Else if CPU's turn
 	else {
 		cpuPts += points;
 	}
-}
 
-function NextTurn() {
-	//
+	if  (playerPts >= 100 || cpuPts >= 100) {
+		GameWin();
+	}
+	else {
+		AddTurn();
+	}
 }
 
 function CPUTurn() {
-	//
+	console.log("Is the CPU's turn now!");
 }
 
 function AddTurn() {
 	turnCount++;
+	rollsThisTurn = 1;
+
+	OnDiceRoll();
+
+	// If CPU's turn
+	if (!IsPlayersTurn()) {
+		CPUTurn();
+	}
+}
+
+function GameWin() {
+	//
+	console.log("The game has finished!");
 }
 
 // User interface logic
