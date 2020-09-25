@@ -57,15 +57,15 @@ const diceRoll = function (){
 		}
 	}
 
-	OnRollEnd();
+	OnRollEnd(randNum);
 }
 
-function OnRollEnd() {
+function OnRollEnd(numberRolled) {
 	if (IsPlayersTurn()) {
 		clearInterval(cpuTurnInterval);
 
 		if (playerPtsThisTurn > 0) {
-			$("#rollSummary").html("You have accumlated <b>" + playerPtsThisTurn + "</b> points this turn. You have a total of <b>" + playerPts + "</b> points.");
+			$("#rollSummary").html("You rolled a <b>" + parseInt(numberRolled) + "</b>! You have accumlated <b>" + playerPtsThisTurn + "</b> points this turn. You have a total of <b>" + playerPts + "</b> points.");
 		}
 		else {
 			HideGameButtons();
@@ -96,9 +96,14 @@ function OnRollEnd() {
 function OnHold() {
 	if (IsPlayersTurn()) {
 		HideGameButtons();
-		UpdateScore(playerPtsThisTurn);
-		playerDiceCount = 0;
-		playerPtsThisTurn = 0;
+		$("#rollSummary").html("You have <b>held</b> your <b>" + playerPtsThisTurn + "</b> points this turn. You now have a total of <b>" + (playerPts + playerPtsThisTurn) + "</b> points.");
+
+		// Wait some time
+		setTimeout(function () {
+			playerDiceCount = 0;
+			playerPtsThisTurn = 0;
+			UpdateScore(playerPtsThisTurn);
+		}, 3000);
 	}
 	else {
 		UpdateScore(cpuPtsThisTurn);
