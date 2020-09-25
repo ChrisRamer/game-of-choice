@@ -100,9 +100,9 @@ function OnHold() {
 
 		// Wait some time
 		setTimeout(function () {
+			UpdateScore(playerPtsThisTurn);
 			playerDiceCount = 0;
 			playerPtsThisTurn = 0;
-			UpdateScore(playerPtsThisTurn);
 		}, 3000);
 	}
 	else {
@@ -153,7 +153,92 @@ function CPUTurn() {
 		}
 	}
 	else {
-		//
+		// If CPU has enough points to win, win
+		if (cpuPts + cpuPtsThisTurn >= 100) {
+			// Stop CPU's turn
+			clearInterval(cpuTurnInterval);
+
+			// Output result
+			$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+
+			// Wait some time
+			setTimeout(function () {
+				OnHold();
+			}, 5000);
+		}
+		// If CPU has 10+ points so far this turn, increase odds of holding
+		else if (cpuPtsThisTurn >= 10) {
+			const randNum = Math.round(Math.random());
+
+			if (randNum === 0) {
+				diceRoll();
+			}
+			else {
+				// Stop CPU's turn
+				clearInterval(cpuTurnInterval);
+
+				// Output result
+				$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+
+				// Wait some time
+				setTimeout(function () {
+					OnHold();
+				}, 5000);
+			}
+		}
+		// If CPU has 20+ points so far this turn, further increase odds of holding
+		else if (cpuPtsThisTurn >= 20) {
+			const randNum = Math.random();
+
+			if (randNum <= 0.25) {
+				diceRoll();
+			}
+			else {
+				// Stop CPU's turn
+				clearInterval(cpuTurnInterval);
+
+				// Output result
+				$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+
+				// Wait some time
+				setTimeout(function () {
+					OnHold();
+				}, 5000);
+			}
+		}
+		// If CPU has 30+ points so far this turn, force holding
+		else if (cpuPtsThisTurn >= 30) {
+			// Stop CPU's turn
+			clearInterval(cpuTurnInterval);
+
+			// Output result
+			$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+
+			// Wait some time
+			setTimeout(function () {
+				OnHold();
+			}, 5000);
+		}
+		// If CPU has < 10 points so far this turn, 90% chance to roll
+		else {
+			const randNum = Math.random();
+
+			if (randNum >= 0.1) {
+				diceRoll();
+			}
+			else {
+				// Stop CPU's turn
+				clearInterval(cpuTurnInterval);
+
+				// Output result
+				$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+
+				// Wait some time
+				setTimeout(function () {
+					OnHold();
+				}, 5000);
+			}
+		}
 	}
 }
 
