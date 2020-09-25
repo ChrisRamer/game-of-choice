@@ -9,9 +9,12 @@ let cpuPts = 0;
 let cpuPtsThisTurn = 0;
 let playerDiceCount = 0;
 let cpuDiceCount = 0;
+let cpuDifficulty;
+let cpuTurnInterval;
 
 function StartGame() {
 	playerName = $("input#playerName").val();
+	cpuDifficulty = $("#cpuLevel").val();
 	AddTurn(); // Start on turn 1
 	$("#startGame").hide(); // Hide game setup
 	$("#playGame").fadeIn(500); // Show gameplay
@@ -25,12 +28,13 @@ const IsPlayersTurn = function() {
 	return false;
 }
 
-function OnDiceRoll() {
+const diceRoll = function (){
 	const randNum = Math.floor(Math.random() * (6 - 1) + 1) // Roll random dice number
 	document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
 
 	if (IsPlayersTurn()) {
-		$("#playGame h3").text("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": " + playerName + " Rolls!");
+		clearInterval(cpuTurnInterval);
+		$("#playGame h3").html("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": " + playerName + " Rolls!");
 
 		if (randNum === 1) {
 			playerPtsThisTurn = 0;
@@ -41,7 +45,7 @@ function OnDiceRoll() {
 		}
 	}
 	else {
-		$("#playGame h3").text("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": CPU Rolls!");
+		$("#playGame h3").html("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": CPU Rolls!");
 
 		if (randNum === 1) {
 			cpuPtsThisTurn = 0;
@@ -57,20 +61,33 @@ function OnDiceRoll() {
 
 function OnRollEnd() {
 	if (IsPlayersTurn()) {
+		clearInterval(cpuTurnInterval);
+
 		if (playerPtsThisTurn > 0) {
-			$("#rollSummary").text("You have accumlated " + playerPtsThisTurn + " points this turn. You have a total of " + playerPts + " points.");
+			$("#rollSummary").html("You have accumlated <b>" + playerPtsThisTurn + "</b> points this turn. You have a total of <b>" + playerPts + "</b> points.");
 		}
 		else {
-			$("#rollSummary").text("Oh no! You lost your points for this round :(");
+			$("#rollSummary").html("Oh no! You lost your points for this round :(");
 
 			// Wait some time
 			setTimeout(function() {
 				AddTurn();
-			}, 2500);
+			}, 3000);
 		}
 	}
 	else {
-		$("#rollSummary").text("");
+		if (cpuPtsThisTurn > 0) {
+			$("#rollSummary").html("CPU <b>rolled</b>! They have accumlated <b>" + cpuPtsThisTurn + "</b> points this turn. They have a total of <b>" + cpuPts + "</b> points.");
+		}
+		else {
+			$("#rollSummary").html("CPU <b>lost</b> all their points for this round! They have a total of <b>" + cpuPts + "</b> points.");
+			clearInterval(cpuTurnInterval);
+
+			// Wait some time
+			setTimeout(function () {
+				AddTurn();
+			}, 3000);
+		}
 	}
 }
 
@@ -106,18 +123,41 @@ function UpdateScore (points) {
 }
 
 function CPUTurn() {
-	console.log("Is the CPU's turn now!");
+	if (cpuDifficulty === "Easy") {
+		// 50/50 chance to roll dice or hold
+		const randNum = Math.round(Math.random());
+
+		// Roll dice
+		if (randNum === 0) {
+			diceRoll();
+		}
+		else {
+			// Stop CPU's turn
+			clearInterval(cpuTurnInterval);
+
+			// Output result
+			$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+
+			// Wait some time
+			setTimeout(function () {
+				OnHold();
+			}, 5000);
+		}
+	}
+	else {
+		//
+	}
 }
 
 function AddTurn() {
 	turnCount++;
 	rollsThisTurn = 1;
 
-	OnDiceRoll();
+	diceRoll();
 
 	// If CPU's turn
 	if (!IsPlayersTurn()) {
-		CPUTurn();
+		cpuTurnInterval = setInterval(CPUTurn, 2500);
 	}
 }
 
@@ -138,7 +178,7 @@ $(document).ready(function () {
 	// On click roll again
 	$("#roll").click(function (e) { 
 		e.preventDefault();
-		OnDiceRoll();
+		diceRoll();
 	});
 
 	// On click hold
