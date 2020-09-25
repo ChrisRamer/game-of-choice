@@ -34,6 +34,7 @@ const diceRoll = function (){
 
 	if (IsPlayersTurn()) {
 		clearInterval(cpuTurnInterval);
+		ShowGameButtons();
 		$("#playGame h3").html("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": " + playerName + " Rolls!");
 
 		if (randNum === 1) {
@@ -67,6 +68,7 @@ function OnRollEnd() {
 			$("#rollSummary").html("You have accumlated <b>" + playerPtsThisTurn + "</b> points this turn. You have a total of <b>" + playerPts + "</b> points.");
 		}
 		else {
+			HideGameButtons();
 			$("#rollSummary").html("Oh no! You lost your points for this round :(");
 
 			// Wait some time
@@ -93,6 +95,7 @@ function OnRollEnd() {
 
 function OnHold() {
 	if (IsPlayersTurn()) {
+		HideGameButtons();
 		UpdateScore(playerPtsThisTurn);
 		playerDiceCount = 0;
 		playerPtsThisTurn = 0;
@@ -157,13 +160,22 @@ function AddTurn() {
 
 	// If CPU's turn
 	if (!IsPlayersTurn()) {
+		HideGameButtons();
 		cpuTurnInterval = setInterval(CPUTurn, 2500);
 	}
 }
 
 function GameWin() {
-	//
+	HideGameButtons();
 	console.log("The game has finished!");
+}
+
+function ShowGameButtons() {
+	$("#gameplayButtons").show();
+}
+
+function HideGameButtons() {
+	$("#gameplayButtons").hide();
 }
 
 // User interface logic
