@@ -96,8 +96,10 @@ function ShowGameButtons(doShow) {
 }
 
 // Rolls dice
-function RollDice() {
-	const randNum = Math.floor(Math.random() * (7 - 1) + 1); // Roll random dice number
+function RollDice(randNum) {
+	if (randNum == null) {
+		randNum = Math.floor(Math.random() * (7 - 1) + 1); // Roll random dice number
+	}
 	document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
 	$("#diceRolled").show();
 
@@ -309,6 +311,18 @@ function CPUTurn() {
 				else if (pts >= 40) {
 					OnHold();
 				}
+			}
+		}
+		// If impossible difficulty
+		if (cpu.difficulty === "Impossible") {
+			const randNum = Math.floor(Math.random() * (7 - 1) + 1); // Roll random dice number
+			
+			// Hold if next number will be a 1
+			if (randNum === 1) {
+				OnHold();
+			}
+			else {
+				RollDice(randNum);
 			}
 		}
 	}
