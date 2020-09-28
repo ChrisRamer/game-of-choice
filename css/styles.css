@@ -71,3 +71,7 @@ button[type="submit"] {
 #playGame {
 	display: none;
 }
+
+#endGame {
+	display: none;
+}

@@ -237,11 +237,14 @@ function UpdateScore(points) {
 
 // End game fanfare
 function EndGame(playerIsWinner) {
+	$("#playGame").hide();
+	$("#endGame").show();
+
 	if (playerIsWinner) {
-		console.log("You win!");
+		$("#endGame h3").html("You won with " + player.pts + " points over " + player.diceRolledThisGame + " rolls! Congrazzles!!");
 	}
 	else {
-		console.log("CPU won!");
+		$("#endGame h3").html("CPU won with " + cpu.pts + " points over " + cpu.diceRolledThisGame + " rolls. Better luck next time, " + player.name + "...");
 	}
 }
 
