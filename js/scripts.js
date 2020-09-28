@@ -6,7 +6,6 @@ let turnCount = 0;
 
 let player = {
 	name: "",
-	handicap: 0,
 	pts: 0,
 	ptsThisTurn: 0,
 	rollsThisTurn: 0,
@@ -15,7 +14,6 @@ let player = {
 
 let cpu = {
 	difficulty: "",
-	handicap: 0,
 	pts: 0,
 	ptsThisTurn: 0,
 	rollsThisTurn: 0,
@@ -61,6 +59,10 @@ function StartGame() {
 	// Set vars
 	player.name = $("input#playerName").val();
 	cpu.difficulty = $("#cpuLevel").val();
+
+	// Set handicaps
+	player.pts = parseInt($("input#playerStartPts").val());
+	cpu.pts = parseInt($("input#cpuStartPts").val());
 
 	// Starts game (player's turn)
 	NextTurn();
