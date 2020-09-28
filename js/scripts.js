@@ -243,14 +243,13 @@ function EndGame(playerIsWinner) {
 
 // CPU takes their turn
 function CPUTurn() {
-	// If easy difficulty
-	if (cpu.difficulty === "Easy") {
-
-		// If first roll of turn, force roll
-		if (cpu.rollsThisTurn < 1) {
-			RollDice();
-		}
-		else {
+	// If first roll of turn, force roll
+	if (cpu.rollsThisTurn < 1) {
+		RollDice();
+	}
+	else  {
+		// If easy difficulty
+		if (cpu.difficulty === "Easy") {
 			const randNum = Math.round(Math.random()); // Chance to roll or hold
 
 			// Roll
@@ -262,16 +261,55 @@ function CPUTurn() {
 				OnHold();
 			}
 		}
-	}
-	// If hard difficulty
-	if (cpu.difficulty === "Hard") {
-		// If CPU has enough points to win, win
-		if (cpu.pts + cpuPtsThisTurn >= 100) {
-			OnHold();
-		}
-		// Else play turn
-		else {
-			// TODO: Change hard AI to also play riskier if falling behind player in points!
+		// If hard difficulty
+		if (cpu.difficulty === "Hard") {
+			// If CPU has enough points to win, win
+			if (cpu.pts + cpu.ptsThisTurn >= 100) {
+				OnHold();
+			}
+			// Else play turn
+			else {
+				// TODO: Change hard AI to also play riskier if falling behind player in points!
+				const randNum = Math.round(Math.random() * (11 - 0) + 1);
+
+				// Increase chance of holding with the more points CPU has this turn
+				const pts = cpu.ptsThisTurn;
+				if (pts < 10) {
+					if (randNum === 10) {
+						OnHold();
+					}
+					else {
+						RollDice();
+					}
+				}
+				else if (pts >= 10) {
+					if (randNum >= 7) {
+						OnHold();
+					}
+					else {
+						RollDice();
+					}
+				}
+				else if (pts >= 20) {
+					if (randNum >= 3) {
+						OnHold();
+					}
+					else {
+						RollDice();
+					}
+				}
+				else if (pts >= 30) {
+					if (randNum >= 1) {
+						OnHold();
+					}
+					else {
+						RollDice();
+					}
+				}
+				else if (pts >= 40) {
+					OnHold();
+				}
+			}
 		}
 	}
 }
