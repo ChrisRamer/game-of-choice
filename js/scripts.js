@@ -251,7 +251,7 @@ function CPUTurn() {
 	}
 	else  {
 		// If easy difficulty
-		if (cpu.difficulty === "Easy") {
+		if (cpu.difficulty === "Normal") {
 			const randNum = Math.round(Math.random()); // Chance to roll or hold
 
 			// Roll
