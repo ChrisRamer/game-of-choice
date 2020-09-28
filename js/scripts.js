@@ -1,292 +1,299 @@
 // Business Logic
 
-let playerName = "Steve";
+const rollWaits = 3000;
+const turnWaits = 5000;
 let turnCount = 0;
-let rollsThisTurn = 1;
-let playerPts = 0;
-let playerPtsThisTurn = 0;
-let cpuPts = 0;
-let cpuPtsThisTurn = 0;
-let playerDiceCount = 0;
-let cpuDiceCount = 0;
-let cpuDifficulty;
-let cpuTurnInterval;
 
-function StartGame() {
-	playerName = $("input#playerName").val();
-	cpuDifficulty = $("#cpuLevel").val();
-	AddTurn(); // Start on turn 1
-	$("#startGame").hide(); // Hide game setup
-	$("#playGame").fadeIn(500); // Show gameplay
-}
+let player = {
+	name: "",
+	handicap: 0,
+	pts: 0,
+	ptsThisTurn: 0,
+	rollsThisTurn: 0,
+	diceRolledThisGame: 0,
+};
 
-const IsPlayersTurn = function() {
+let cpu = {
+	difficulty: "",
+	handicap: 0,
+	pts: 0,
+	ptsThisTurn: 0,
+	rollsThisTurn: 0,
+	diceRolledThisGame: 0,
+};
+
+// Returns true if player's turn, false if CPU's turn
+const isPlayersTurn = function () {
+	// Player's turn is odd turn number
 	if (turnCount % 2 == 1) {
 		return true;
 	}
-
+	// CPU's turn is even turn number
 	return false;
 }
 
-const diceRoll = function (){
-	const randNum = Math.floor(Math.random() * (6 - 1) + 1) // Roll random dice number
-	document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
+// Returns a string for a roll/turn summary
+const getSummaryText = function(wantedText, numberRolled) {
+	switch (wantedText) {
+		case "playerRolled":
+			return "You rolled a <b>" + numberRolled + "</b>! You have accumlated <b> " + player.ptsThisTurn + "</b> points this turn. You have a total of <b> " + player.pts + "</b> points."
+		case "playerRolled1":
+			return "Oh no! You lost your points for this round :( You have a total of " + player.pts + " points.";
+		case "playerHeld":
+			return "You have <b>held</b> your <b>" + player.ptsThisTurn + "</b> points this turn. You now have a total of <b>" + (player.pts + player.ptsThisTurn) + "</b> points.";
+		case "cpuRolled":
+			return "CPU <b> rolled</b> a " + numberRolled + ". They have accumlated <b> " + cpu.ptsThisTurn + "</b> points this turn.They have a total of <b> " + cpu.pts + "</b> points.";
+		case "cpuRolled1":
+			return "CPU <b>lost</b> all their points for this round! They have a total of <b>" + cpu.pts + "</b> points.";
+		case "cpuHeld":
+			return "CPU has <b>held</b> their <b>" + cpu.ptsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpu.pts + cpu.ptsThisTurn) + "</b> points.";
+		case "playerWon":
+			return "Congratulations " + player.name + "! You won this game with " + player.pts + " amassed through " + player.diceRolledThisGame + " rolls! GG";
+		case "cpuWon":
+			return "Ohnoes! The CPU outdid you! CPU earned " + cpu.pts + " amassed through " + cpu.diceRolledThisGame + " rolls. Better luck next  time!";
+	}
 
-	if (IsPlayersTurn()) {
-		clearInterval(cpuTurnInterval);
-		ShowGameButtons();
-		$("#playGame h3").html("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": " + playerName + " Rolls!");
+	return "Null text, you should not be seeing this...";
+}
 
-		if (randNum === 1) {
-			playerPtsThisTurn = 0;
-		}
-		else {
-			playerPtsThisTurn += randNum;
-			playerDiceCount++;
-		}
+// Starts game
+function StartGame() {
+	// Set vars
+	player.name = $("input#playerName").val();
+	cpu.difficulty = $("#cpuLevel").val();
+
+	// Starts game (player's turn)
+	NextTurn();
+
+	// Hide setup and show gameplay
+	$("#startGame").hide();
+	$("#playGame").fadeIn(500);
+}
+
+// Goes to next turn
+function NextTurn() {
+	turnCount++;
+	player.rollsThisTurn = 0;
+	cpu.rollsThisTurn = 0;
+
+	if (isPlayersTurn()) {
+		RollDice();
+	}
+	// CPU's turn
+	else {
+		CPUTurn();
+	}
+}
+
+// Shows or hides gameplay buttons (should only be shown when it's player's turn)
+function ShowGameButtons(doShow) {
+	if (doShow) {
+		$("#gameplayButtons").show();
 	}
 	else {
-		$("#playGame h3").html("Turn " + parseInt(turnCount) + " | Roll " + parseInt(rollsThisTurn++) + ": CPU Rolls!");
+		$("#gameplayButtons").hide();
+	}
+}
 
+// Rolls dice
+function RollDice() {
+	const randNum = Math.floor(Math.random() * (7 - 1) + 1); // Roll random dice number
+	document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
+	$("#diceRolled").show();
+
+	// If player's turn
+	if (isPlayersTurn()) {
+		$("#playGame h3").html("Turn " + turnCount + " | Roll " + (++player.rollsThisTurn) + ": " + player.name + " Rolls!");
+
+		// If a 1 is rolled, lose points this turn
 		if (randNum === 1) {
-			cpuPtsThisTurn = 0;
+			player.ptsThisTurn = 0;
 		}
 		else {
-			cpuPtsThisTurn += randNum;
-			cpuDiceCount++;
+			player.ptsThisTurn += randNum;
 		}
+
+		player.diceRolledThisGame++;
+		ShowGameButtons(true);
+	}
+	// If CPU's turn
+	else {
+		$("#playGame h3").html("Turn " + turnCount + " | Roll " + (++cpu.rollsThisTurn) + ": CPU Rolls!");
+		
+		// If a 1 is rolled, lose points this turn
+		if (randNum === 1) {
+			cpu.ptsThisTurn = 0;
+		}
+		else {
+			cpu.ptsThisTurn += randNum;
+		}
+
+		cpu.diceRolledThisGame++;
+		ShowGameButtons(false);
 	}
 
+	// End dice roll
 	OnRollEnd(randNum);
 }
 
+// Outputs roll summary
 function OnRollEnd(numberRolled) {
-	if (IsPlayersTurn()) {
-		clearInterval(cpuTurnInterval);
-
-		if (playerPtsThisTurn > 0) {
-			$("#rollSummary").html("You rolled a <b>" + parseInt(numberRolled) + "</b>! You have accumlated <b>" + playerPtsThisTurn + "</b> points this turn. You have a total of <b>" + playerPts + "</b> points.");
-		}
-		else {
-			HideGameButtons();
-			$("#rollSummary").html("Oh no! You lost your points for this round :(");
-
-			// Wait some time
-			setTimeout(function() {
-				AddTurn();
-			}, 3000);
-		}
-	}
-	else {
-		if (cpuPtsThisTurn > 0) {
-			$("#rollSummary").html("CPU <b>rolled</b>! They have accumlated <b>" + cpuPtsThisTurn + "</b> points this turn. They have a total of <b>" + cpuPts + "</b> points.");
-		}
-		else {
-			$("#rollSummary").html("CPU <b>lost</b> all their points for this round! They have a total of <b>" + cpuPts + "</b> points.");
-			clearInterval(cpuTurnInterval);
-
-			// Wait some time
-			setTimeout(function () {
-				AddTurn();
-			}, 3000);
-		}
-	}
-}
-
-function OnHold() {
-	if (IsPlayersTurn()) {
-		HideGameButtons();
-		$("#rollSummary").html("You have <b>held</b> your <b>" + playerPtsThisTurn + "</b> points this turn. You now have a total of <b>" + (playerPts + playerPtsThisTurn) + "</b> points.");
-
-		// Wait some time
-		setTimeout(function () {
-			UpdateScore(playerPtsThisTurn);
-			playerDiceCount = 0;
-			playerPtsThisTurn = 0;
-		}, 3000);
-	}
-	else {
-		UpdateScore(cpuPtsThisTurn);
-		cpuDiceCount = 0;
-		cpuPtsThisTurn = 0;
-	}
-}
-
-function UpdateScore (points) {
 	// If player's turn
-	if (IsPlayersTurn()) {
-		playerPts += points;
-	}
-	// Else if CPU's turn
-	else {
-		cpuPts += points;
-	}
-
-	if  (playerPts >= 100 || cpuPts >= 100) {
-		GameWin();
-	}
-	else {
-		AddTurn();
-	}
-}
-
-function CPUTurn() {
-	if (cpuDifficulty === "Easy") {
-		// 50/50 chance to roll dice or hold
-		const randNum = Math.round(Math.random());
-
-		// Roll dice
-		if (randNum === 0) {
-			diceRoll();
+	if (isPlayersTurn()) {
+		// If earned points this roll
+		if (player.ptsThisTurn > 0) {
+			$("#rollSummary").html(getSummaryText("playerRolled", numberRolled));
 		}
+		// If lost points for this roll
 		else {
-			// Stop CPU's turn
-			clearInterval(cpuTurnInterval);
+			$("#rollSummary").html(getSummaryText("playerRolled1"));
 
-			// Output result
-			$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
+			ShowGameButtons(false);
 
-			// Wait some time
 			setTimeout(function () {
-				OnHold();
-			}, 5000);
+				NextTurn();
+			}, turnWaits);
 		}
 	}
-	else {
-		// If CPU has enough points to win, win
-		if (cpuPts + cpuPtsThisTurn >= 100) {
-			// Stop CPU's turn
-			clearInterval(cpuTurnInterval);
-
-			// Output result
-			$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
-
-			// Wait some time
-			setTimeout(function () {
-				OnHold();
-			}, 5000);
-		}
-		// If CPU has 10+ points so far this turn, increase odds of holding
-		else if (cpuPtsThisTurn >= 10) {
-			const randNum = Math.round(Math.random());
-
-			if (randNum === 0) {
-				diceRoll();
-			}
-			else {
-				// Stop CPU's turn
-				clearInterval(cpuTurnInterval);
-
-				// Output result
-				$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
-
-				// Wait some time
-				setTimeout(function () {
-					OnHold();
-				}, 5000);
-			}
-		}
-		// If CPU has 20+ points so far this turn, further increase odds of holding
-		else if (cpuPtsThisTurn >= 20) {
-			const randNum = Math.random();
-
-			if (randNum <= 0.25) {
-				diceRoll();
-			}
-			else {
-				// Stop CPU's turn
-				clearInterval(cpuTurnInterval);
-
-				// Output result
-				$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
-
-				// Wait some time
-				setTimeout(function () {
-					OnHold();
-				}, 5000);
-			}
-		}
-		// If CPU has 30+ points so far this turn, force holding
-		else if (cpuPtsThisTurn >= 30) {
-			// Stop CPU's turn
-			clearInterval(cpuTurnInterval);
-
-			// Output result
-			$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
-
-			// Wait some time
-			setTimeout(function () {
-				OnHold();
-			}, 5000);
-		}
-		// If CPU has < 10 points so far this turn, 90% chance to roll
-		else {
-			const randNum = Math.random();
-
-			if (randNum >= 0.1) {
-				diceRoll();
-			}
-			else {
-				// Stop CPU's turn
-				clearInterval(cpuTurnInterval);
-
-				// Output result
-				$("#rollSummary").html("CPU has <b>held</b> their <b>" + cpuPtsThisTurn + "</b> points this turn. They now have a total of <b>" + (cpuPts + cpuPtsThisTurn) + "</b> points.");
-
-				// Wait some time
-				setTimeout(function () {
-					OnHold();
-				}, 5000);
-			}
-		}
-	}
-}
-
-function AddTurn() {
-	turnCount++;
-	rollsThisTurn = 1;
-
-	diceRoll();
-
 	// If CPU's turn
-	if (!IsPlayersTurn()) {
-		HideGameButtons();
-		cpuTurnInterval = setInterval(CPUTurn, 2500);
+	else {
+		// If earned points this roll
+		if (cpu.ptsThisTurn > 0) {
+			$("#rollSummary").html(getSummaryText("cpuRolled", numberRolled));
+
+			setTimeout(function () {
+				CPUTurn();
+			}, rollWaits);
+		}
+		// If lost points for this roll
+		else {
+			$("#rollSummary").html(getSummaryText("cpuRolled1"));
+
+			setTimeout(function () {
+				NextTurn();
+			}, turnWaits);
+		}
 	}
 }
 
-function GameWin() {
-	HideGameButtons();
-	console.log("The game has finished!");
+// Holds points and goes to next turn
+function OnHold() {
+	// If player's turn
+	if (isPlayersTurn()) {
+		$("#rollSummary").html(getSummaryText("playerHeld"));
+
+		ShowGameButtons(false);
+
+		// Update score and reset turn data
+		setTimeout(function () {
+			UpdateScore(player.ptsThisTurn);
+			player.rollsThisTurn = 0;
+			player.ptsThisTurn = 0;
+		}, turnWaits);
+	}
+	// If CPU's turn
+	else {
+		$("#rollSummary").html(getSummaryText("cpuHeld"));
+
+		// Update score and reset turn data
+		setTimeout(function () {
+			UpdateScore(cpu.ptsThisTurn);
+			cpu.rollsThisTurn = 0;
+			cpu.ptsThisTurn = 0;
+		}, turnWaits);
+	}
+
+	// Hide dice rolled image to avoid confusion, especially when CPU's turn
+	$("#diceRolled").hide();
 }
 
-function ShowGameButtons() {
-	$("#gameplayButtons").show();
+// Updates total points
+function UpdateScore(points) {
+	// If player's turn
+	if (isPlayersTurn()) {
+		player.pts += points;
+	}
+	// If CPU's turn
+	else {
+		cpu.pts += points;
+	}
+
+	// If victory condition is met, end game
+	if (player.pts >= 100) {
+		EndGame(true);
+	}
+	else if (cpu.pts >= 100) {
+		EndGame(false);
+	}
+	// If game is continuing, go to next turn
+	else {
+		NextTurn();
+	}
 }
 
-function HideGameButtons() {
-	$("#gameplayButtons").hide();
+// End game fanfare
+function EndGame(playerIsWinner) {
+	if (playerIsWinner) {
+		console.log("You win!");
+	}
+	else {
+		console.log("CPU won!");
+	}
+}
+
+// CPU takes their turn
+function CPUTurn() {
+	// If easy difficulty
+	if (cpu.difficulty === "Easy") {
+
+		// If first roll of turn, force roll
+		if (cpu.rollsThisTurn < 1) {
+			RollDice();
+		}
+		else {
+			const randNum = Math.round(Math.random()); // Chance to roll or hold
+
+			// Roll
+			if (randNum === 0) {
+				RollDice();
+			}
+			// Hold
+			else {
+				OnHold();
+			}
+		}
+	}
+	// If hard difficulty
+	if (cpu.difficulty === "Hard") {
+		// If CPU has enough points to win, win
+		if (cpu.pts + cpuPtsThisTurn >= 100) {
+			OnHold();
+		}
+		// Else play turn
+		else {
+			// TODO: Change hard AI to also play riskier if falling behind player in points!
+		}
+	}
 }
 
 // User interface logic
 
 $(document).ready(function () {
-
+	// Start game
 	$("form#startGame").submit(function (e) { 
 		e.preventDefault();
 		StartGame();
 	});
-	
-	// On click roll again
+
+	// On click roll button
 	$("#roll").click(function (e) { 
 		e.preventDefault();
-		diceRoll();
+		RollDice();
 	});
 
-	// On click hold
+	// On click hold button
 	$("#hold").click(function (e) { 
 		e.preventDefault();
 		OnHold();
 	});
-
 });
