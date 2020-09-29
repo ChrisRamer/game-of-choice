@@ -83,3 +83,7 @@ button[type="submit"] {
 #playerLose {
 	color: red;
 }
+
+#newGame {
+	margin-left: 100px;
+}

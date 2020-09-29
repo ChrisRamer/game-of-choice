@@ -268,6 +268,12 @@ function EndGame(playerIsWinner) {
 	else {
 		$("#playerLose").html("CPU won with " + cpu.pts + " points over " + cpu.diceRolledThisGame + " rolls. Better luck next time, " + player.name + "...");
 	}
+
+	$("#newGame").click(function (e) { 
+		e.preventDefault();
+		$("#endGame").hide();
+		$("#startGame").show();
+	});
 }
 
 // CPU takes their turn
