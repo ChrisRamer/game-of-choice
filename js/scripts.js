@@ -102,42 +102,64 @@ function RollDice(randNum) {
 	if (randNum == null) {
 		randNum = Math.floor(Math.random() * (7 - 1) + 1); // Roll random dice number
 	}
-	document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
-	$("#diceRolled").show();
 
-	// If player's turn
 	if (isPlayersTurn()) {
 		$("#playGame h3").html("Turn " + turnCount + " | Roll " + (++player.rollsThisTurn) + ": " + player.name + " Rolls!");
-
-		// If a 1 is rolled, lose points this turn
-		if (randNum === 1) {
-			player.ptsThisTurn = 0;
-		}
-		else {
-			player.ptsThisTurn += randNum;
-		}
-
-		player.diceRolledThisGame++;
-		ShowGameButtons(true);
 	}
-	// If CPU's turn
 	else {
 		$("#playGame h3").html("Turn " + turnCount + " | Roll " + (++cpu.rollsThisTurn) + ": CPU Rolls!");
-		
-		// If a 1 is rolled, lose points this turn
-		if (randNum === 1) {
-			cpu.ptsThisTurn = 0;
-		}
-		else {
-			cpu.ptsThisTurn += randNum;
-		}
-
-		cpu.diceRolledThisGame++;
-		ShowGameButtons(false);
 	}
 
-	// End dice roll
-	OnRollEnd(randNum);
+	let interval;
+	$("#diceRolled").show();
+	$("#rollSummary").hide();
+	ShowGameButtons(false);
+
+	// "Roll" dice by cycling through images
+	index = 1;
+	interval = setInterval(function() {
+		index++;
+		if (index >= 6) {
+			index = 1;
+		}
+		document.getElementById("diceRolled").src = "img/dice" + index + ".png";
+	}, 50);
+
+	setTimeout(function() {
+		clearInterval(interval);
+		document.getElementById("diceRolled").src = "img/dice" + randNum + ".png"; // Update dice graphic
+		$("#rollSummary").show();
+
+		// If player's turn
+		if (isPlayersTurn()) {
+			// If a 1 is rolled, lose points this turn
+			if (randNum === 1) {
+				player.ptsThisTurn = 0;
+			}
+			else {
+				player.ptsThisTurn += randNum;
+			}
+
+			player.diceRolledThisGame++;
+			ShowGameButtons(true);
+		}
+		// If CPU's turn
+		else {
+			// If a 1 is rolled, lose points this turn
+			if (randNum === 1) {
+				cpu.ptsThisTurn = 0;
+			}
+			else {
+				cpu.ptsThisTurn += randNum;
+			}
+
+			cpu.diceRolledThisGame++;
+			ShowGameButtons(false);
+		}
+
+		// End dice roll
+		OnRollEnd(randNum);
+	}, 1000);
 }
 
 // Outputs roll summary
