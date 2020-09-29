@@ -263,10 +263,10 @@ function EndGame(playerIsWinner) {
 	$("#endGame").show();
 
 	if (playerIsWinner) {
-		$("#endGame h3").html("You won with " + player.pts + " points over " + player.diceRolledThisGame + " rolls! Congrazzles!!");
+		$("#playerWin").html("You won with " + player.pts + " points over " + player.diceRolledThisGame + " rolls! Congrazzles!!");
 	}
 	else {
-		$("#endGame h3").html("CPU won with " + cpu.pts + " points over " + cpu.diceRolledThisGame + " rolls. Better luck next time, " + player.name + "...");
+		$("#playerLose").html("CPU won with " + cpu.pts + " points over " + cpu.diceRolledThisGame + " rolls. Better luck next time, " + player.name + "...");
 	}
 }
 
