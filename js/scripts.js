@@ -278,7 +278,12 @@ function CPUTurn() {
 	}
 	else  {
 		// If easy difficulty
-		if (cpu.difficulty === "Normal") {
+		if (cpu.difficulty === "Easy") {
+			// Always hold any points it gets, no risk taking here!
+			OnHold();
+		}
+		// If normal difficulty
+		else if (cpu.difficulty === "Normal") {
 			const randNum = Math.round(Math.random()); // Chance to roll or hold
 
 			// Roll
@@ -291,7 +296,7 @@ function CPUTurn() {
 			}
 		}
 		// If hard difficulty
-		if (cpu.difficulty === "Hard") {
+		else if (cpu.difficulty === "Hard") {
 			// If CPU has enough points to win, win
 			if (cpu.pts + cpu.ptsThisTurn >= 100) {
 				OnHold();
@@ -341,7 +346,7 @@ function CPUTurn() {
 			}
 		}
 		// If impossible difficulty
-		if (cpu.difficulty === "Impossible") {
+		else if (cpu.difficulty === "Impossible") {
 			const randNum = Math.floor(Math.random() * (7 - 1) + 1); // Roll random dice number
 			
 			// Hold if next number will be a 1
