@@ -40,7 +40,7 @@ const getSummaryText = function(wantedText, numberRolled) {
 		case "playerHeld":
 			return "You have <b>held</b> your <b>" + player.ptsThisTurn + "</b> points this turn. You now have a total of <b>" + (player.pts + player.ptsThisTurn) + "</b> points.";
 		case "cpuRolled":
-			return "CPU <b> rolled</b> a " + numberRolled + ". They have accumlated <b> " + cpu.ptsThisTurn + "</b> points this turn.They have a total of <b> " + cpu.pts + "</b> points.";
+			return "CPU <b> rolled</b> a <b>" + numberRolled + "</b>. They have accumlated <b> " + cpu.ptsThisTurn + "</b> points this turn.They have a total of <b> " + cpu.pts + "</b> points.";
 		case "cpuRolled1":
 			return "CPU <b>lost</b> all their points for this round! They have a total of <b>" + cpu.pts + "</b> points.";
 		case "cpuHeld":
