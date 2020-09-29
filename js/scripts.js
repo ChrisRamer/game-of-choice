@@ -56,13 +56,18 @@ const getSummaryText = function(wantedText, numberRolled) {
 
 // Starts game
 function StartGame() {
-	// Set vars
+	// Set defaults
+	turnCount = 0;
 	player.name = $("input#playerName").val();
-	cpu.difficulty = $("#cpuLevel").val();
-
-	// Set handicaps
+	player.pts = 0;
 	player.pts = parseInt($("input#playerStartPts").val());
+	player.rollsThisTurn = 0;
+	player.diceRolledThisGame = 0;
+	cpu.difficulty = $("#cpuLevel").val();
 	cpu.pts = parseInt($("input#cpuStartPts").val());
+	cpu.ptsThisTurn = 0;
+	cpu.rollsThisTurn = 0;
+	cpu.diceRolledThisGame = 0;
 
 	// Starts game (player's turn)
 	NextTurn();
@@ -264,9 +269,13 @@ function EndGame(playerIsWinner) {
 
 	if (playerIsWinner) {
 		$("#playerWin").html("You won with " + player.pts + " points over " + player.diceRolledThisGame + " rolls! Congrazzles!!");
+		$("#playerWin").show();
+		$("#playerLose").hide();
 	}
 	else {
 		$("#playerLose").html("CPU won with " + cpu.pts + " points over " + cpu.diceRolledThisGame + " rolls. Better luck next time, " + player.name + "...");
+		$("#playerLose").show();
+		$("#playerWin").hide();
 	}
 
 	$("#newGame").click(function (e) { 
