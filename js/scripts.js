@@ -59,16 +59,16 @@ function StartGame() {
 	// Set defaults
 	turnCount = 0;
 	player.name = $("input#playerName").val();
-	player.pts = 0;
-	player.pts = parseInt($("input#playerStartPts").val());
+	// player.pts = parseInt($("input#playerStartPts").val());	// This comes in NaN with the placeholder, use tenerary operator below
+	player.pts = parseInt($("input#playerStartPts").val()) ? parseInt($("input#playerStartPts").val()) : 0;
 	player.rollsThisTurn = 0;
 	player.diceRolledThisGame = 0;
 	cpu.difficulty = $("#cpuLevel").val();
-	cpu.pts = parseInt($("input#cpuStartPts").val());
+	cpu.pts = parseInt($("input#cpuStartPts").val()) ? parseInt($("input#cpuStartPts").val()) : 0;
 	cpu.ptsThisTurn = 0;
 	cpu.rollsThisTurn = 0;
 	cpu.diceRolledThisGame = 0;
-
+	
 	// Starts game (player's turn)
 	NextTurn();
 
